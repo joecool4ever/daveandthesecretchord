@@ -53,7 +53,11 @@ class AnimationController():
                     print(f"Adding {anim} to Animations")
 
                     rects = move_animation_rects[anim][0]
-                    self.owned_anims[anim] = Animation(anim, self.load_subsurf(rects, self.name, subname=subname), move_animation_rects[anim][1])
+                    subsurfs = self.load_subsurf(rects, self.name, subname=subname)
+                    if anim == ObjectStates.SLIDING:
+                        subsurfs[0] = pygame.transform.flip(subsurfs[0], True, False)
+
+                    self.owned_anims[anim] = Animation(anim, subsurfs, move_animation_rects[anim][1])
                 else:
                     print(f'Anim name: {anim} not in Keys')
             for instrument in instruments:

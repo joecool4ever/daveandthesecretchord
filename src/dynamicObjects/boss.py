@@ -1,4 +1,4 @@
-from dynamicObject import DynamicObject, ObjectStates
+from .dynamicObject import DynamicObject, ObjectStates
 from animationsystem import AnimationController, Animation
 from objectTypes import GameObjectTypes
 

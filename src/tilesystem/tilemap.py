@@ -17,8 +17,12 @@ class Tilemap:
 
 
         for i in range(self.grid_height):
-            tile = Tile(self.game, "left_top_corner", 0, (1, i), self.game.all_sprites, self.game.tiles)
+            tile = Tile(self.game, "left_top_corner", 0, (10, i), self.game.all_sprites, self.game.tiles)
             self.tilemap["1;" + str(i)] = tile
+
+        for i in range(self.grid_height):
+            tile = Tile(self.game, "left_top_corner", 0, (25, i), self.game.all_sprites, self.game.tiles)
+            self.tilemap["5;" + str(i)] = tile
 
         
 

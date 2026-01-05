@@ -11,8 +11,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 import pygame
 
 from utils import lerp
-from dynamicObject import DynamicObject, ObjectStates
-from dynamicObjects.dave import Instruments
+from enums import Instruments
 from dynamicObjects import Boss, Dave
 from objectTypes import GameObjectTypes
 from screen import Screen
@@ -33,7 +32,6 @@ class Game:
         pygame.mixer.init()
         pygame.font.init()
 
-        self.cotton_eye = pygame.mixer.Sound("assets\\sounds\\cotton-eye.wav")
 
         self.font = pygame.font.SysFont('Arial', 30)
         
@@ -82,6 +80,12 @@ class Game:
         self.tilemap = Tilemap(self)
 
         self.frames = 0
+
+
+
+
+
+        self.freezing = False
 
     def run(self):
         while self.running:
@@ -137,6 +141,8 @@ class Game:
                     self.dave.jump() 
                 if event.key == pygame.K_LSHIFT:
                     self.dave.dash()
+                if event.key == pygame.K_p:
+                    self.freezing = not self.freezing
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.movement[0] = False
@@ -148,7 +154,7 @@ class Game:
                     
     def applyPhysics(self,dt):
         self.items.update(dt)
-        self.character_sprites.update(self,self.tilemap, dt, (self.movement[1] - self.movement[0], self.crouch_pressed))
+        self.character_sprites.update(self,self.tilemap, dt, (self.movement[1] - self.movement[0], self.crouch_pressed), freeze = self.freezing)
         self.character_sprites.post_update(dt)
         
 
@@ -179,7 +185,24 @@ class Game:
             self.screen.blit(sprite.image, sprite.rect.topleft)
         for sprite in self.tiles.sprites():
             self.screen.blit(sprite.image, sprite.rect.topleft)
+            self.screen.blit(sprite.hitbox.hitbox_surf, (sprite.rect.x, sprite.rect.y + 5))
+
+        # create a transparent surface the size of the hitbox 
+        hitbox_surf = pygame.Surface((self.dave.hitboxes["head"].width, self.dave.hitboxes["head"].height), pygame.SRCALPHA)
+        b_hitbox_surf = pygame.Surface((self.dave.hitboxes["body"].width, self.dave.hitboxes["body"].height), pygame.SRCALPHA)
+        f_hitbox_surf = pygame.Surface((self.dave.hitboxes["feet"].width, self.dave.hitboxes["feet"].height), pygame.SRCALPHA)
+
+
+
+        # fill it with semi-transparent color
+        hitbox_surf.fill((255, 0, 0, 120))
+        b_hitbox_surf.fill((0, 0, 255, 120))
+        f_hitbox_surf.fill((255, 140, 0, 120))
+
         self.screen.blit(self.dave.image, self.dave.rect)
+        self.screen.blit(hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["head"].x, self.dave.rect.y + self.dave.hitboxes["head"].y))
+        self.screen.blit(b_hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["body"].x, self.dave.rect.y + self.dave.hitboxes["body"].y))
+        self.screen.blit(f_hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["feet"].x, self.dave.rect.y + self.dave.hitboxes["feet"].y))
         
         # debug text
         dave_pos_text = self.font.render(f'{self.dave.rect.x}, {self.dave.rect.y}', True, (0,0,0))
@@ -187,6 +210,10 @@ class Game:
         dave_grounded_text = self.font.render(f'{self.dave.grounded_timer}', True, (0,0,0))
         dave_grounded_bool_text = self.font.render(f'{self.dave.col['down']}', True, (0,0,0))
         dave_crouching_text = self.font.render(f'{self.dave.crouching}', True, (0,0,0))
+
+
+        # col_flag_rect = self.dave.rect.copy()
+        
 
         self.hud.display()
         self.screen.set_to_screen()
