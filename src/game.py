@@ -46,10 +46,12 @@ class Game:
         self.tiles = SpriteGroup()
         self.character_sprites = SpriteGroup()
         self.items = SpriteGroup()
+        self.closeTiles = SpriteGroup()
 
         #sprites
         self.dave = Dave(self, self.all_sprites, self.character_sprites, current_instrument=Instruments.MIC)
-        self.health = Item(50, 60, "health", self.assets, (self.screen.virtual_width//2 + 100, self.screen.virtual_height//2), self.all_sprites, self.items)
+
+        # self.health = Item(50, 60, "health", self.assets, (self.screen.virtual_width//2 + 100, self.screen.virtual_height//2), self.all_sprites, self.items)
 
         for x in range(20):
             Item(27, 27, "coin", self.assets, ((self.screen.virtual_width//2 + 120) + x * 10, self.screen.virtual_height//2 + 100), self.all_sprites, self.items)
@@ -69,7 +71,7 @@ class Game:
         self.screen.camera.x = self.dave.rect.centerx - self.screen.virtual_width // 2
         self.screen.camera.y = self.dave.rect.centery - self.screen.virtual_height // 2
         
-        # self.bree = Boss((100, 20), "bree", GameObjectTypes.ENEMY, 35, 35, self)
+        # self.bree = Boss((100, 20), "bree", GameObjectTypes.ENEMY, 35, 35, self, self.all_sprites)
         self.movement = [False, False]
         self.crouch_pressed = False
 
@@ -80,10 +82,6 @@ class Game:
         self.tilemap = Tilemap(self)
 
         self.frames = 0
-
-
-
-
 
         self.freezing = False
 
@@ -142,7 +140,7 @@ class Game:
                 if event.key == pygame.K_LSHIFT:
                     self.dave.dash()
                 if event.key == pygame.K_p:
-                    self.freezing = not self.freezing
+                    self.tilemap.printMatrix()
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.movement[0] = False
@@ -153,6 +151,8 @@ class Game:
                     self.dave.crouch(self.crouch_pressed)
                     
     def applyPhysics(self,dt):
+
+
         self.items.update(dt)
         self.character_sprites.update(self,self.tilemap, dt, (self.movement[1] - self.movement[0], self.crouch_pressed), freeze = self.freezing)
         self.character_sprites.post_update(dt)
@@ -185,7 +185,7 @@ class Game:
             self.screen.blit(sprite.image, sprite.rect.topleft)
         for sprite in self.tiles.sprites():
             self.screen.blit(sprite.image, sprite.rect.topleft)
-            self.screen.blit(sprite.hitbox.hitbox_surf, (sprite.rect.x, sprite.rect.y + 5))
+            # self.screen.blit(sprite.hitbox.hitbox_surf, (sprite.rect.x, sprite.rect.y + 5))
 
         # create a transparent surface the size of the hitbox 
         hitbox_surf = pygame.Surface((self.dave.hitboxes["head"].width, self.dave.hitboxes["head"].height), pygame.SRCALPHA)
@@ -200,9 +200,9 @@ class Game:
         f_hitbox_surf.fill((255, 140, 0, 120))
 
         self.screen.blit(self.dave.image, self.dave.rect)
-        self.screen.blit(hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["head"].x, self.dave.rect.y + self.dave.hitboxes["head"].y))
-        self.screen.blit(b_hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["body"].x, self.dave.rect.y + self.dave.hitboxes["body"].y))
-        self.screen.blit(f_hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["feet"].x, self.dave.rect.y + self.dave.hitboxes["feet"].y))
+        # self.screen.blit(hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["head"].x, self.dave.rect.y + self.dave.hitboxes["head"].y))
+        # self.screen.blit(b_hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["body"].x, self.dave.rect.y + self.dave.hitboxes["body"].y))
+        # self.screen.blit(f_hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["feet"].x, self.dave.rect.y + self.dave.hitboxes["feet"].y))
         
         # debug text
         dave_pos_text = self.font.render(f'{self.dave.rect.x}, {self.dave.rect.y}', True, (0,0,0))

@@ -1,11 +1,23 @@
+import pygame
 from .dynamicObject import DynamicObject, ObjectStates
 from animationsystem import AnimationController, Animation
 from objectTypes import GameObjectTypes
 
+
+
 class Boss(DynamicObject):
+
+    images = {
+        "bree" : "hi"
+    }
     def __init__(self, pos, name, type, width, height, game, *groups, health = 100, cor = True):
         self.x, self.y = pos
-        super().__init__(self.x, self.y, name, *groups, type = type, width=width, height=height, game = game)
+        self.x, self.y = game.screen.virtual_width//2 + 10, game.screen.virtual_height//2
+        self.name = name
+        self.image = pygame.Surface((35,35))
+        self.mask = pygame.mask.from_surface(self.image)
+        # super().__init__(x, y, self.name, type, 35, 35, game, self.image, cor = False, *groups)
+        super().__init__(self.x, self.y, name, type, width=width, height=height, game = game, image = self.image, *groups)
 
         self.cor = True
 
