@@ -1,5 +1,5 @@
 import pygame
-from dynamicObject import DynamicObject
+from .dynamicObject import DynamicObject
 from objectTypes import GameObjectTypes
 from enums import Instruments, ObjectStates
 from animationsystem import AnimationController, Animation
@@ -21,6 +21,7 @@ class Dave(DynamicObject):
 
         self.monies = 0
         self.notes_collected = {color : False for color in note_colors}
+        self.freezing = False
 
     def collect_item(self, name):
         if "note" in name:
@@ -47,13 +48,15 @@ class Dave(DynamicObject):
         if self.can_jump:
             self.grounded_timer = 0
             self.vel[1] = - 200
+            self.jumping = True
 
     def crouch(self, crouching):
         self.crouching = crouching
         self.state = ObjectStates.CROUCH_IDLE
     
-    def update(self, game, tilemap, dt, movement=(0,0)):
-        super().update(game, tilemap, dt, movement)
+    def update(self, game, tilemap, dt, movement=(0,0), freeze = False):
+        super().update(game, tilemap, dt, movement, freeze)
+        self.freezing = freeze
 
         if self.dashing:
             self.dash_timer -= dt

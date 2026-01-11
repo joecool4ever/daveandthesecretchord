@@ -10,7 +10,8 @@ move_animation_rects = {
     ObjectStates.JUMPING : [[pygame.Rect(34*4, 0, 35, 35)], 1],
     ObjectStates.CROUCH_IDLE : [[pygame.Rect(0, 4*35, 35, 35)], 8],
     ObjectStates.CROUCH_WALK : [[pygame.Rect(34*i, 4*35, 35, 35) for i in range(1,6)], 8],
-    ObjectStates.DASHING : [[pygame.Rect(34*6, 1*35, 35, 35)], 1]
+    ObjectStates.DASHING : [[pygame.Rect(34*6, 1*35, 35, 35)], 1],
+    ObjectStates.SLIDING :[[pygame.Rect(34*5, 2*35, 35, 35)], 1]
     # ObjectStates.ATTACKING_WALK : [pygame.Rect(34*i, 2*35, 35, 35) for i in range(7)],
     # ObjectStates.ATTACKING : [pygame.Rect(34*i, 3*35, 35, 35) for i in range(7)]
 }

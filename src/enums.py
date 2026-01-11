@@ -13,6 +13,7 @@ class ObjectStates(Enum):
     ATTACKING_WALK = "Attacking Walk"
     ATTACKING_JUMP = "Attacking Jump"
     ATTACKING_FALL = "Attacking Fall"
+    SLIDING = "Sliding"
 
 class Instruments(Enum):
     LYRE = "Lyre"

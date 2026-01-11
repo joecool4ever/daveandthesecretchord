@@ -2,6 +2,8 @@ import pygame
 
 from rects import newTiles, platformTiles
 
+from dynamicObjects.hitbox import Hitbox
+
 
 
 class Tile(pygame.sprite.Sprite):
@@ -22,6 +24,9 @@ class Tile(pygame.sprite.Sprite):
         # gsame.assets.delete_iccfile("assets\\tiles\\Forest_Tileset.png")
         tile_images = game.assets.load_image("tiles\\Forest_Tileset.png")
         self.image = tile_images.subsurface(newTiles[tile_type][variant])
+        self.back_up = self.image
+
+        
 
         self.type = "grass"
 
@@ -32,6 +37,8 @@ class Tile(pygame.sprite.Sprite):
             topleft =(self.grid_x * self.tile_size,
                       self.grid_y * self.tile_size)
         )
+
+        self.hitbox = Hitbox(self.image, True, self.rect)
 
         self.mask = pygame.mask.from_surface(self.image)
 
