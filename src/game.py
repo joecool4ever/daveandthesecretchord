@@ -12,12 +12,12 @@ import pygame
 
 from utils import lerp
 from enums import Instruments
-from dynamicObjects import Boss, Dave
+from dynamicObjects import *
 from objectTypes import GameObjectTypes
 from screen import Screen
 from assetload import AssetLoad
 from tilesystem import Tilemap
-from spriteGroup import SpriteGroup
+from spriteGroups import *
 from animationsystem import AnimationController
 from background import Background
 from item import Item
@@ -40,21 +40,25 @@ class Game:
         self.assets = AssetLoad()
         self.background = Background(self.assets)
 
+        self.EM = EntityManager(self)
+
         #spriteGroups
         self.all_sprites = SpriteGroup()
-        self.camera_group = SpriteGroup()
+        self.visible = VisibleSprites()
         self.tiles = SpriteGroup()
         self.character_sprites = SpriteGroup()
         self.items = SpriteGroup()
         self.closeTiles = SpriteGroup()
 
         #sprites
-        self.dave = Dave(self, self.all_sprites, self.character_sprites, current_instrument=Instruments.MIC)
+        self.dave = self.EM.spawnEntity(GameObjectTypes.DAVE, [self.screen.virtual_width//2, self.screen.virtual_height//2])
 
         # self.health = Item(50, 60, "health", self.assets, (self.screen.virtual_width//2 + 100, self.screen.virtual_height//2), self.all_sprites, self.items)
 
         for x in range(20):
-            Item(27, 27, "coin", self.assets, ((self.screen.virtual_width//2 + 120) + x * 10, self.screen.virtual_height//2 + 100), self.all_sprites, self.items)
+            
+            # self.EM.spawnEntity(GameObjectTypes.ITEMS, [self.screen.virtual_width//2 + (x * 10), self.screen.virtual_height//2], subtype="coin")
+            self.EM.spawnEntity(GameObjectTypes.ITEMS, [(self.screen.virtual_width//2 + 120) + x * 10, self.screen.virtual_height//2 + 100], subtype="coin")
 
         #hud
         self.hud = Hud(self.dave, self.screen, self.assets, self.font)
@@ -64,7 +68,7 @@ class Game:
         notes_height = self.screen.virtual_height//2
 
         for color in note_colors[:-1]:
-            note = Item(27, 27, color + "note", self.assets, (notes_width, notes_height), self.items, self.all_sprites)
+            self.EM.spawnEntity(GameObjectTypes.ITEMS, (notes_width, notes_height), subtype=color + "note")
             notes_width += 50
         
         #focus on Dave
@@ -94,7 +98,6 @@ class Game:
     
             self.handle_input(dt)
             self.applyPhysics(dt)
-            self.handle_item_collisions(self.dave, self.items)
             self.renderScene(dt)
             
             pygame.display.flip()
@@ -139,8 +142,6 @@ class Game:
                     self.dave.jump() 
                 if event.key == pygame.K_LSHIFT:
                     self.dave.dash()
-                if event.key == pygame.K_p:
-                    self.tilemap.printMatrix()
             elif event.type == pygame.KEYUP:
                 if event.key == pygame.K_a:
                     self.movement[0] = False
@@ -152,10 +153,9 @@ class Game:
                     
     def applyPhysics(self,dt):
 
-
-        self.items.update(dt)
-        self.character_sprites.update(self,self.tilemap, dt, (self.movement[1] - self.movement[0], self.crouch_pressed), freeze = self.freezing)
-        self.character_sprites.post_update(dt)
+        self.EM.activeActors.update(self, self.tilemap, dt, (self.movement[1] - self.movement[0], self.crouch_pressed), freeze = self.freezing)
+        self.EM.activeActors.post_update(dt)
+        self.EM.update(self.screen.camera)
         
 
         # Moving the camera to player
@@ -169,23 +169,19 @@ class Game:
 
         self.background.updateBackgrounds()
 
-    def handle_item_collisions(self, player, items):
-        hits = pygame.sprite.spritecollide(player, items, dokill=True, collided=pygame.sprite.collide_mask)
-
-        for hit in hits:
-            self.dave.collect_item(hit.name)
-
-
 
     
     def renderScene(self, dt):
         self.screen.game_surface.fill((226, 255, 252)) 
         self.background.backRender(self.screen)
-        for sprite in self.items.sprites():
-            self.screen.blit(sprite.image, sprite.rect.topleft)
-        for sprite in self.tiles.sprites():
+        # for sprite in self.items.sprites():
+        #     self.screen.blit(sprite.image, sprite.rect.topleft)
+        for sprite in self.EM.visible_tiles.sprites():
             self.screen.blit(sprite.image, sprite.rect.topleft)
             # self.screen.blit(sprite.hitbox.hitbox_surf, (sprite.rect.x, sprite.rect.y + 5))
+        for sprite in self.EM.visible_sprites:
+            self.screen.blit(sprite.image, sprite.rect.topleft)
+        
 
         # create a transparent surface the size of the hitbox 
         hitbox_surf = pygame.Surface((self.dave.hitboxes["head"].width, self.dave.hitboxes["head"].height), pygame.SRCALPHA)
@@ -199,7 +195,7 @@ class Game:
         b_hitbox_surf.fill((0, 0, 255, 120))
         f_hitbox_surf.fill((255, 140, 0, 120))
 
-        self.screen.blit(self.dave.image, self.dave.rect)
+        # self.screen.blit(self.dave.image, self.dave.rect)
         # self.screen.blit(hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["head"].x, self.dave.rect.y + self.dave.hitboxes["head"].y))
         # self.screen.blit(b_hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["body"].x, self.dave.rect.y + self.dave.hitboxes["body"].y))
         # self.screen.blit(f_hitbox_surf, (self.dave.rect.x + self.dave.hitboxes["feet"].x, self.dave.rect.y + self.dave.hitboxes["feet"].y))

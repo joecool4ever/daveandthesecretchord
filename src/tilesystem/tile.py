@@ -4,6 +4,8 @@ from rects import newTiles, platformTiles
 
 from dynamicObjects.hitbox import Hitbox
 
+from spriteGroups import entityManager
+
 
 
 class Tile(pygame.sprite.Sprite):

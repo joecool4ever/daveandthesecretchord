@@ -18,7 +18,7 @@ class Tilemap:
 
 
         for i in range(self.grid_height):
-            tile = Tile(self.game, "left_top_corner", 0, (10, i), self.game.all_sprites, self.game.tiles)
+            tile = Tile(self.game, "left_top_corner", 0, (10, i), self.game.EM.all_sprites, self.game.EM.tiles)
             self.tilemap["10;" + str(i)] = tile
 
         # for i in range(self.grid_height):
@@ -26,7 +26,7 @@ class Tilemap:
         #     self.tilemap["25;" + str(i)] = tile
         
         for i in range(self.grid_width):
-            tile = Tile(self.game, "right_top_corner", 0, (i, 5), self.game.all_sprites, self.game.tiles)
+            tile = Tile(self.game, "right_top_corner", 0, (i, 5), self.game.EM.all_sprites, self.game.EM.tiles)
             self.tilemap[str(i) + ";5"] = tile
 
         
@@ -34,33 +34,33 @@ class Tilemap:
         for i in range(self.grid_width * 2):
             height = self.grid_height
             if i == 0:
-                tile = Tile(self.game, "left_top_corner", 0, (0, height), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "left_top_corner", 0, (0, height), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap["0;" + str(height)] = tile
 
-                tile = Tile(self.game, "left_middle", 0, (0, height + 1), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "left_middle", 0, (0, height + 1), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap["0;"+ str(height + 1)] = tile
 
-                tile = Tile(self.game, "bottom_left", 0, (0, height + 2), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "bottom_left", 0, (0, height + 2), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap["0;"+ str(height + 2)] = tile
             elif i == self.grid_width * 2 - 1:
-                tile = Tile(self.game, "right_top_corner", 0, (i, height), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "right_top_corner", 0, (i, height), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap[str(i) + ";"+ str(height)] = tile
 
-                tile = Tile(self.game, "right_middle", 0, (i, height + 1), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "right_middle", 0, (i, height + 1), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap[str(i) + ";"+ str(height + 1)] = tile
 
-                tile = Tile(self.game, "bottom_right", 0, (i, height + 2), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "bottom_right", 0, (i, height + 2), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap[str(i) + ";"+ str(height + 2)] = tile
             else:
                 variant = random.randint(0,1)
 
-                tile = Tile(self.game, "middle_top", variant, (i, height), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "middle_top", variant, (i, height), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap[str(i) + ";" + str(height)] = tile
 
-                tile = Tile(self.game, "true_middle", variant, (i, height + 1), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "true_middle", variant, (i, height + 1), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap[str(i) + ";" + str(height + 1)] = tile
 
-                tile = Tile(self.game, "bottom_middle", variant, (i, height + 2), self.game.all_sprites, self.game.tiles)
+                tile = Tile(self.game, "bottom_middle", variant, (i, height + 2), self.game.EM.all_sprites, self.game.EM.tiles)
                 self.tilemap[str(i) + ";" + str(height + 2)] = tile
 
         self.playercoord = []

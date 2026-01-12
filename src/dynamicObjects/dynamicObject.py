@@ -3,7 +3,6 @@ from objectTypes import GameObjectTypes
 from animationsystem import AnimationController
 from enums import ObjectStates, Instruments
 from animationsystem import StateMachine
-from spriteGroup import SpriteGroup
 
 
 from dynamicObjects.hitbox import Hitbox
@@ -11,13 +10,14 @@ from dynamicObjects.hitbox import Hitbox
 class DynamicObject(pygame.sprite.Sprite):
     G = 400
 
-    def __init__(self, x, y, name, type, width, height, game, image, *groups, health = 100, cor = False, ):
+    def __init__(self, x, y, name, type, width, height, game, image, visible, *groups, health = 100, cor = False, ):
         super().__init__(*groups)
 
         self.image = image
         self.backup = self.image
         self.rect = self.image.get_rect(topleft=(x,y))
         self.mask = pygame.mask.from_surface(self.image)
+        self.visible = visible
 
         mask_rect = self.mask.get_bounding_rects()[0]  # relative to mask
         # distance from left edge of rect to leftmost opaque pixel
@@ -107,7 +107,7 @@ class DynamicObject(pygame.sprite.Sprite):
         self.max_height = 10000000
 
 
-        self.closeTiles = SpriteGroup()
+        self.closeTiles = []
 
     def rects_update(self):
         self.mask_rect = self.mask.get_bounding_rects()[0]
@@ -128,17 +128,14 @@ class DynamicObject(pygame.sprite.Sprite):
     
     def update(self, game, tilemap, dt, movement=(0,0), freeze = False):
 
-        self.closeTiles.empty()
+        self.closeTiles = []
 
         hit_rect = self.hitboxes["head"]
         head_world_rect = pygame.Rect(self.rect.x + hit_rect.x, self.rect.y + hit_rect.y, hit_rect.width, hit_rect.height)
 
-        # for tile in game.tiles.sprites():
-        #     tile.image = tile.back_up
-
         for tile in game.tilemap.tiles_around(head_world_rect):
             # tile.image = pygame.Surface((16,16))
-            self.closeTiles.add(tile)
+            self.closeTiles.append(tile)
 
         self.col = {'up': False, 'down': False, 'left': False, 'right': False}
 
@@ -148,7 +145,7 @@ class DynamicObject(pygame.sprite.Sprite):
         self.dx = (movement[0] * self.speed + self.vel[0]) * dt
         self.rect.x += self.dx
 
-        for collide_tile in self.closeTiles.sprites():
+        for collide_tile in self.closeTiles:
             tile_box = collide_tile.hitbox.tile_hitbox
             world_tile = pygame.Rect(collide_tile.rect.x + tile_box.x, collide_tile.rect.y + tile_box.y, tile_box.width, tile_box.height)
 
@@ -161,13 +158,11 @@ class DynamicObject(pygame.sprite.Sprite):
                 self.rect.left = world_tile.right - offset
                 self.dx = 0
                 self.vel[0] = 0
-                print("Colliding Left")
                 break
             elif self.dx > 0 and right_world_rect.colliderect(world_tile):
                 offset = self.rect.right - right_world_rect.right
                 self.rect.right = world_tile.left + offset
                 self.dx = 0
-                print("Colliding Right")
                 self.vel[0] = 0
                 break
         
@@ -177,7 +172,7 @@ class DynamicObject(pygame.sprite.Sprite):
 
         self.rect.y += self.dy
 
-        for collide_tile in self.closeTiles.sprites():            
+        for collide_tile in self.closeTiles:            
             tile_box = collide_tile.hitbox.tile_hitbox
             world_tile = pygame.Rect(collide_tile.rect.x + tile_box.x, collide_tile.rect.y + tile_box.y, tile_box.width, tile_box.height)
 
@@ -191,7 +186,6 @@ class DynamicObject(pygame.sprite.Sprite):
                 self.rect.top = world_tile.bottom
                 self.vel[1] = 0
                 self.dy = 0
-                print("Colliding Up!")
                 break
             elif self.dy > 0 and feet_world_rect.colliderect(world_tile):
                 self.col["down"] = True
@@ -205,54 +199,6 @@ class DynamicObject(pygame.sprite.Sprite):
         #     print(self.rect.y)
         
     def post_update(self, dt):
-
-        
-
-
-
-        # predicted_state = StateMachine.stateChange(self, self.state, (self.dx, self.dy))
-        
-        # for collide_tile in self.game.tiles.sprites():
-        #     hit = pygame.sprite.collide_mask(self, collide_tile)
-        #     if hit:
-        #         collide_tile.image = pygame.Surface((16,16))
-        #         if self.dx < 0:
-        #             if self.rect.bottom > collide_tile.rect.top and self.rect.top < collide_tile.rect.bottom:
-        #                 if self.rect.left >= collide_tile.rect.centerx:
-        #                     self.rect.left = collide_tile.rect.right - self.mask_offset_left
-        #                     self.col['left'] = True
-        #                     self.dx = 0
-        #         elif self.dx > 0:
-        #             if self.rect.bottom > collide_tile.rect.top and self.rect.top < collide_tile.rect.bottom:
-        #                 if self.rect.right <= collide_tile.rect.centerx:
-        #                     # print("Right")
-        #                     self.rect.right = collide_tile.rect.left + self.mask_offset_right
-        #                     self.col['right'] = True
-        #                     self.dx = 0
-        #     else:
-        #         collide_tile.image = collide_tile.back_up
-
-        # for collide_tile in self.game.tiles.sprites():
-        #     hit = pygame.sprite.collide_mask(self, collide_tile)
-        #     if hit:
-        #         collide_tile.image = pygame.Surface((16,16))
-        #         if self.dy < 0:
-        #             if self.rect.right > collide_tile.rect.left and self.rect.left < collide_tile.rect.right:
-        #                 if self.rect.top >= collide_tile.rect.centery:
-        #                     # print("top")
-        #                     self.rect.top = collide_tile.rect.bottom - self.mask_offset_top
-        #                     self.col['up'] = True
-        #                     self.vel[1] = 0
-        #                     self.dy = 0
-        #         elif self.dy > 0:
-        #             if self.rect.right > collide_tile.rect.left and self.rect.left < collide_tile.rect.right:
-        #                 if self.rect.bottom <= collide_tile.rect.centery:                                    
-        #                     self.rect.bottom = collide_tile.rect.top + self.mask_offset_bottom
-        #                     self.col['down'] = True
-        #                     self.vel[1] = 0
-        #                     self.dy = 0
-        #     else:
-        #         collide_tile.image = collide_tile.back_up
         
         if self.col['down']:
             self.grounded_timer = .1
@@ -267,8 +213,8 @@ class DynamicObject(pygame.sprite.Sprite):
         
         
         reset = prev_state is not self.state
-        if reset:
-            print(self.state)
+        # if reset:
+        #     print(self.state)
 
         self.setImage(reset, dt)
 
