@@ -12,7 +12,7 @@ class Screen:
         self.height = 768
         self.display = pygame.display.set_mode((self.width, self.height))
         # self.display = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT), pygame.FULLSCREEN)
-        self.virtual_width, self.virtual_height = 480,256
+        self.virtual_width, self.virtual_height = 480, 256
         self.game_surface = pygame.Surface((self.virtual_width, self.virtual_height))
 
         self.camera = pygame.math.Vector2(0,0)

@@ -11,6 +11,7 @@ class Item(pygame.sprite.Sprite):
 
         self.x, self.y = pos
         self.type = "item"
+        self.visible = True
 
         self.animationController = AnimationController(self.type, name = self.name, assets = assets)
 
@@ -19,6 +20,7 @@ class Item(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
 
-    def update(self, dt):
+    def update(self, game, tilemap, dt, movement=(0,0), freeze = False):
         self.image = self.animationController.animate(dt, state = self.name)
         self.mask = pygame.mask.from_surface(self.image)
+

@@ -9,15 +9,15 @@ from utils import note_colors
 
 class Dave(DynamicObject):
     global assets
-    def __init__(self, game, *groups, health = 100, current_instrument = None, unlocked_instruments = []):
-        x, y = game.screen.virtual_width//2, game.screen.virtual_height//2
+    def __init__(self, game, pos, *groups, health = 100, current_instrument = None, unlocked_instruments = []):
+        x, y = pos
         self.name = "dave"
         self.type = GameObjectTypes.DAVE
         self.current_instrument = current_instrument
         self.image = pygame.Surface((35,35))
         self.mask = pygame.mask.from_surface(self.image)
-        # self.image = self.image.subsurface(pygame.Rect(34, 0, 35, 35))
-        super().__init__(x, y, self.name, type, 35, 35, game, self.image, cor = False, *groups)
+        self.visible = True
+        super().__init__(x, y, self.name, type, 35, 35, game, self.image, self.visible, cor = False, *groups)
 
         self.monies = 0
         self.notes_collected = {color : False for color in note_colors}
@@ -28,7 +28,7 @@ class Dave(DynamicObject):
             self.notes_collected[name[:-4:]] = True
         elif "coin" in name:
             self.monies += 1
-        print("Collected", name)
+        # print("Collected", name)
 
 
     def attack(self, attacking, dt):

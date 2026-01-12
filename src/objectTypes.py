@@ -1,6 +1,6 @@
 from enum import Enum
 
 class GameObjectTypes(Enum):
-    GROUND = "Ground"
+    ITEMS = "ITEMS"
     ENEMY = "ENEMY"
     DAVE = "DAVE"
